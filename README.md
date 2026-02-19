@@ -43,7 +43,7 @@ python -c "import torch, torchvision; print(torch.__version__); print(torchvisio
 ```
 dcgan_wgan/
 ├─ data/
-│  ├─ raw/                       # BraTS 2023 goes here (renamed)
+│  ├─ raw/                       # BraTS 2023 goes here
 │  └─ preprocessed_slices_64/     # example output (or _128 / _256)
 ├─ runs/
 │  ├─ dcgan_64/
@@ -59,6 +59,32 @@ dcgan_wgan/
    ├─ eval_fid_kid.py            # your current eval script
    └─ generate.py
 ```
+
+---
+
+## 1.5) Download BraTS 2023 data and place it in `data/raw/`
+
+This repository **does not include any BraTS data**.  
+Before running preprocessing, you must:
+
+1. **Download BraTS 2023** (licence required) from the official source.
+2. **Unzip/extract** the dataset locally.
+3. Copy/move the extracted BraTS folders into:
+
+```
+dcgan_wgan/data/raw/
+```
+
+The preprocessing script searches **recursively**, so your `data/raw/` can contain one or more nested folders as long as the NIfTI files are inside somewhere, for example:
+
+- `...-t1n.nii.gz`
+- `...-t1c.nii.gz`
+- `...-t2w.nii.gz`
+- `...-t2f.nii.gz`
+
+If `preprocess.py` reports “No files found”, double‑check:
+- you placed the dataset under `data/raw/` (not a different folder), and
+- the modality suffixes match your BraTS filenames.
 
 ---
 
