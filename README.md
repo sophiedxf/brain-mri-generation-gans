@@ -1,6 +1,6 @@
 # 2D Brain MRI Slice Generation (DCGAN & WGAN-GP; multiple resolutions)
 
-This project trains and compares **DCGAN** and **WGAN-GP** to generate **unconditional 2D brain MRI slices** from **BraTS 2023**.
+This project trains a **DCGAN** and a **WGAN-GP** to generate **unconditional 2D brain MRI slices** from **BraTS 2023**.
 
 Supported resolutions: **64×64**, **128×128**, **256×256**.
 
@@ -12,7 +12,6 @@ Workflow:
 4) Generate synthetic images + grids  
 
 > **Important:** BraTS data is not included in this repo.  
-> **Important:** Inception-based FID/KID are imperfect for MRIs; treat them as **relative** metrics only.
 
 ---
 
@@ -54,7 +53,7 @@ pip install -r train_wgangp\requirements.txt
 
 ---
 
-## 1) Repository structure (new)
+## 1) Repository structure
 
 ```
 repo_root/
@@ -72,7 +71,7 @@ repo_root/
 │  ├─ dataset.py
 │  ├─ models_dcgan.py
 │  ├─ utils_training.py
-│  ├─ (optional) config.py
+│  ├─ config.py
 │  └─ requirements.txt
 │
 ├─ train_wgangp/
@@ -81,19 +80,21 @@ repo_root/
 │  ├─ models_dcgan.py
 │  ├─ models_wgangp.py
 │  ├─ utils_training.py
-│  ├─ (optional) config.py
+│  ├─ config.py
 │  └─ requirements.txt
 │
 ├─ generate/
 │  ├─ generate.py
 │  ├─ models_dcgan.py
-│  ├─ (optional) utils_training.py / config.py
+│  ├─ utils_training.py
+│  ├─ config.py
 │  └─ requirements.txt
 │
 ├─ evaluate/
 │  ├─ eval_fid_kid.py
 │  ├─ dataset.py
 │  ├─ models_dcgan.py
+│  ├─ config.py
 │  └─ requirements.txt
 │
 └─ requirements_all.txt
@@ -135,7 +136,7 @@ Converts 3D BraTS NIfTI volumes into a **single packed `.npy`** file of slices.
 - `data/preprocessed_slices_<size>/brats2023_<modality>_<size>_packed.npy`
 - slices are float32 in **[-1, 1]**, background ≈ **-1**
 
-### Key parameters (what they do + suggestions)
+### Key parameters
 
 **Core**
 - `--raw_dir` *(required)*: root folder containing BraTS, e.g. `data/raw`
@@ -178,12 +179,7 @@ python preprocess\preprocess.py ^
 
 ## 4) Train DCGAN — `train_dcgan/train_dcgan.py`
 
-DCGAN training supports:
-- TTUR (separate LR for G and D)
-- AMP (faster on CUDA)
-- EMA (cleaner samples / often better FID/KID)
-
-### Key parameters (what they do + suggestions)
+### Key parameters
 
 **Data**
 - `--data_dir`: directory containing the packed dataset file
@@ -235,8 +231,6 @@ python train_dcgan\train_dcgan.py ^
 ---
 
 ## 5) Train WGAN-GP — `train_wgangp/train_wgangp.py`
-
-WGAN-GP is usually more stable than DCGAN and often produces better samples.
 
 ### Key parameters (what they do + suggestions)
 
@@ -342,10 +336,3 @@ python generate\generate.py ^
 
 ---
 
-## Notes / Good practice
-
-- Keep `data/` and `runs/` out of GitHub (use `.gitignore`).
-- Always match preprocessing size ↔ training `--image_size`.
-- For reporting:
-  - compare DCGAN vs WGAN-GP under identical preprocessing + evaluation settings
-  - consider reporting both raw `G` and `G_ema`
