@@ -269,7 +269,7 @@ python train_wgangp\train_wgangp.py ^
 
 ---
 
-## 6) Evaluate FID/KID — `evaluate/eval_fid_kid.py`
+## 6) Evaluate FID/KID — `evaluate/eval_fid.py`
 
 Computes FID + KID using **TorchMetrics Inception-v3 (ImageNet)** features.
 
@@ -288,7 +288,7 @@ Computes FID + KID using **TorchMetrics Inception-v3 (ImageNet)** features.
 ### Example command (EMA, 2k/2k)
 
 ```bat
-python evaluate\eval_fid_kid.py ^
+python evaluate\eval_fid.py ^
   --data_dir data\preprocessed_slices_64 ^
   --ckpt runs\wgangp_64\checkpoint_latest.pt ^
   --num_real 2000 ^
