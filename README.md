@@ -15,7 +15,7 @@ Workflow:
 
 Below is an example showing the model’s inference output (WGAN-GP, 64×64):
 
-<p align="center"> <img src="grid_G_ema_64_1600px.png" width="400"> </p>
+<p align="center"> <img src="grid_G_ema_64_1600px.png" width="600"> </p>
 
 ---
 
