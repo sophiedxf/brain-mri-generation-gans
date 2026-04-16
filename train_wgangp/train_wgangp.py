@@ -24,6 +24,8 @@ CONFIG = {
     "out_dir": "runs/wgangp_64",
     "image_size": 64,              # 64 | 128 | 256
     "seed": 42,
+    "train_ratio": 0.8,
+    "val_ratio": 0.1,
 
     # Dataloader
     "num_workers": 2,
@@ -117,6 +119,8 @@ def parse_args():
     p.add_argument("--out_dir", type=str, default=CONFIG["out_dir"])
     p.add_argument("--image_size", type=int, default=CONFIG["image_size"])
     p.add_argument("--seed", type=int, default=CONFIG["seed"])
+    p.add_argument("--train_ratio", type=float, default=CONFIG["train_ratio"])
+    p.add_argument("--val_ratio", type=float, default=CONFIG["val_ratio"])
 
     # Model
     p.add_argument("--z_dim", type=int, default=CONFIG["z_dim"])
@@ -177,6 +181,12 @@ def train(args):
         raise ValueError(f"--image_size must be one of {sorted(VALID_IMAGE_SIZES)}")
     if args.gp_every < 1:
         raise ValueError("--gp_every must be >= 1")
+    if args.train_ratio <= 0 or args.train_ratio >= 1:
+        raise ValueError("--train_ratio must be in (0,1)")
+    if args.val_ratio < 0 or args.val_ratio >= 1:
+        raise ValueError("--val_ratio must be in [0,1)")
+    if args.train_ratio + args.val_ratio >= 1:
+        raise ValueError("--train_ratio + --val_ratio must be < 1")
 
     device = get_device()
 
@@ -193,7 +203,13 @@ def train(args):
     set_seed(args.seed)
 
     # Dataset / loader
-    ds = BraTSSliceDataset(args.data_dir, split="train", seed=args.seed)
+    ds = BraTSSliceDataset(
+        args.data_dir,
+        split="train",
+        seed=args.seed,
+        train_ratio=args.train_ratio,
+        val_ratio=args.val_ratio,
+    )
     dl = DataLoader(
         ds,
         batch_size=args.batch_size,

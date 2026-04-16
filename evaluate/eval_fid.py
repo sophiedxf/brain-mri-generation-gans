@@ -99,6 +99,9 @@ def _to_3ch_0_1(x: torch.Tensor) -> torch.Tensor:
 def compute_fid_kid(
     ckpt_path: str,
     data_dir: str,
+    seed: int,
+    train_ratio: float,
+    val_ratio: float,
     num_real: int,
     num_fake: int,
     batch_size: int,
@@ -110,7 +113,13 @@ def compute_fid_kid(
     device = get_device()
 
     # dataset (test split)
-    ds_real = BraTSSliceDataset(data_dir, split="test")
+    ds_real = BraTSSliceDataset(
+        data_dir,
+        split="test",
+        seed=seed,
+        train_ratio=train_ratio,
+        val_ratio=val_ratio,
+    )
     dl_real = DataLoader(
         ds_real,
         batch_size=batch_size,
@@ -177,6 +186,9 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--ckpt", type=str, required=True, help="Path to checkpoint (.pt)")
     p.add_argument("--data_dir", type=str, required=True, help="Directory containing packed dataset")
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--train_ratio", type=float, default=0.8)
+    p.add_argument("--val_ratio", type=float, default=0.1)
     p.add_argument("--num_real", type=int, default=2000)
     p.add_argument("--num_fake", type=int, default=2000)
     p.add_argument("--batch_size", type=int, default=32)
@@ -198,6 +210,12 @@ def main():
         raise FileNotFoundError(args.ckpt)
     if not os.path.isdir(args.data_dir):
         raise FileNotFoundError(args.data_dir)
+    if args.train_ratio <= 0 or args.train_ratio >= 1:
+        raise ValueError("--train_ratio must be in (0,1)")
+    if args.val_ratio < 0 or args.val_ratio >= 1:
+        raise ValueError("--val_ratio must be in [0,1)")
+    if args.train_ratio + args.val_ratio >= 1:
+        raise ValueError("--train_ratio + --val_ratio must be < 1")
 
     use_ema = bool(args.use_ema) and (not args.no_ema)
 
@@ -207,6 +225,9 @@ def main():
     out = compute_fid_kid(
         ckpt_path=args.ckpt,
         data_dir=args.data_dir,
+        seed=args.seed,
+        train_ratio=args.train_ratio,
+        val_ratio=args.val_ratio,
         num_real=args.num_real,
         num_fake=args.num_fake,
         batch_size=args.batch_size,
