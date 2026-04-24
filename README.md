@@ -11,15 +11,10 @@ It includes:
 - image generation from trained checkpoints
 
 Supported image sizes:
-- `64 x 64`
-- `128 x 128`
-- `256 x 256`
+`64 x 64`, `128 x 128`, `256 x 256`
 
 Supported MRI modalities:
-- `t1n`
-- `t1c`
-- `t2w`
-- `t2f`
+`t1n`, `t1c`, `t2w`, `t2f`
 
 <p align="center">
   <img src="grid_G_ema_64_1600px.png" width="600" alt="Example generated MRI slices">
